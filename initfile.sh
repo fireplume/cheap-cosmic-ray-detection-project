@@ -19,6 +19,15 @@ declare -g filename
 declare -g sizeinMB
 declare -g block_size_kb
 
+declare -g DEBUG=1
+
+function debug_out
+{
+    if [[ $DEBUG == 1 ]]; then
+        echo "DEBUG: $1"
+    fi
+}
+
 function is_next_param
 {
     local index=$1
@@ -77,7 +86,7 @@ the file filling, defaults to 128KB. Must be a multiple of
     fi
 
     ##############################################
-    # Let's practice options parsing 
+    # Let's practice options parsing
     # without destroying them (shift), although
     # we have only a copy in this function.
 
@@ -119,6 +128,8 @@ function assert_enough_memory
 
     if [[ $requested -gt $available ]]; then
        echo "You've requested more memory than is available"
+       echo "If you already did a run of this script, erasing the file"
+       echo "on your ram drive would fix your issue"
        exit 1
     fi
 }
@@ -137,14 +148,15 @@ function assert_ramdisk
     IFS="
 "
 
-    local mypwd=`pwd`
+    local mypwd=`pwd -P`
 
     # for each line of mount's output
     for line in `mount`; do
-        
+
+        mount_point=$(gawk '{ print $3 }'  <<< $line)
         # Check if the line matches "type tmpfs" and also check if the path we're in ($mypwd)
         # matches (=~) the mount path, 3rd field ($3) of the current line as extracted by gawk.
-        if [[ $line =~ "type tmpfs" && $mypwd =~ $(gawk '{ print $3 }'  <<< $line) ]]; then
+        if [[ ($line =~ "type tmpfs") && ($mypwd =~ "$mount_point") ]]; then
             ramdisk_flag=1
             break
         fi
@@ -154,8 +166,8 @@ function assert_ramdisk
     IFS=$bifs
 
     # assert we're on a ramdisk
-    if ! [[ $ramdisk_flag == 1 ]]; then
-       echo Not on a ramdisk, exiting!
+    if [[ $ramdisk_flag != 1 ]]; then
+       echo "Not on a ramdisk, exiting!"
        exit 1
     fi
 }
