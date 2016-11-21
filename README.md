@@ -7,9 +7,10 @@ https://en.wikipedia.org/wiki/Soft_error#Causes_of_soft_errors
 
 Yes, the project title is catchy. There are other factors which may cause soft errors, see the link above for details. Still, the idea of using off the shelf memory to detect soft errors which could be due to cosmic ray was interesting to me, so I thought I'd make a little project about it.
 
-------------------
-Running the flow
-------------------
+------------------------------------------------------
+Running the flow (it's easier to read in 'raw' mode)
+------------------------------------------------------
+
 1) Clone this project on your computer
 2) Run 'make' to generate the 'seek' utility
 3) Make sure the 'seek' utility is in your $PATH environment variable
@@ -20,7 +21,10 @@ You will lose the start date information, but you can follow up on the
 memory verification later on by running the 'checkfile.sh' command that
 'main.sh' printed on your screen in the ramdrive directory.
 
+
+------------------------------------
 Complete flow example:
+------------------------------------
 
 cosmic -> git clone git@github.com:fireplume/cheap-cosmic-ray-detection-project.git
 Cloning into 'cheap-cosmic-ray-detection-project'...
