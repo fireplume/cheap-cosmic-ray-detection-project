@@ -8,7 +8,7 @@ if [[ $# != 2 ]]; then
     echo "For example, create a 512MB ram drive named 'ramdrive' in your home:"
     echo "  cd ~"
     echo "  mkdir ramdrive"
-    echo "  sudo mount -t tmpfs -o size=512M tmpfs ramdrive"
+    echo "  sudo mount -t tmpfs -o size=512M,sync tmpfs ramdrive"
     echo
     exit 0
 fi

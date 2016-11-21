@@ -27,10 +27,10 @@ done
 
 ###################################################
 # Get file size in MB
-filesize=`du -BM $filename | awk '{ s = gensub("M", "", "", $1); print s }'`
+filesize=`du -BM $filename | awk '{ s = gensub("M", "", "1", $1); print s }'`
 base_offset=$((filesize/4))
 
-if [[ ($filesize -lt 4) || ($(($filesize%4)) != 0)]]; then
+if [[ ($filesize -lt 4) || ($(($filesize%4)) != 0) ]]; then
     echo "This script is not meant to be run on files less than 4MB or"
     echo "which are not a multiple of 4MB"
     exit 1

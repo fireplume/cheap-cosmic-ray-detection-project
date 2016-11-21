@@ -42,8 +42,8 @@ cosmic -> ls
 checkfile.sh  initfile.sh  main.sh  Makefile  README.md  seek  seek.c
 cosmic -> export PATH=$PATH:`pwd`
 cosmic -> mkdir ramdrive
-cosmic -> sudo mount -t tmpfs -o size=128M tmpfs `pwd`/ramdrive
-[sudo] password for fireplume: 
+cosmic -> sudo mount -t tmpfs -o size=128M,sync tmpfs `pwd`/ramdrive
+[sudo] password for fireplume:
 cosmic -> main.sh ramdrive 128
 /tmp/exp/cheap-cosmic-ray-detection-project/initfile.sh "\000" "cosmic-screen" 128
 Filling file with: dd if=/dev/zero iflag=fullblock bs=131072 count=1024 2> /dev/null | tr "\000" "\000" > cosmic-screen
@@ -52,7 +52,7 @@ Done!
 Sun Nov 20 19:27:39 EST 2016
 Psst! pssst! Come on GeV particle!
 ^C
-cosmic -> 
+cosmic ->
 cosmic -> cd ramdrive/
 cosmic -> /tmp/exp/cheap-cosmic-ray-detection-project/checkfile.sh "cosmic-screen" "\x00"
 Sun Nov 20 19:29:53 EST 2016
