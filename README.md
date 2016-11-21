@@ -24,7 +24,10 @@ memory verification later on by running the 'checkfile.sh' command that
 
 
 ------------------------------------
-Complete flow example:
+Complete flow example for 128MB use of
+RAM Replace 128 by as big a number as
+you can to increase chances of detecting
+acosmic ray:
 ------------------------------------
 
 cosmic -> git clone git@github.com:fireplume/cheap-cosmic-ray-detection-project.git
@@ -36,15 +39,20 @@ remote: Total 20 (delta 5), reused 14 (delta 4), pack-reused 0
 Receiving objects: 100% (20/20), 7.12 KiB | 0 bytes/s, done.
 Resolving deltas: 100% (5/5), done.
 Checking connectivity... done.
+
 cosmic -> cd cheap-cosmic-ray-detection-project/
 cosmic -> make
 gcc -Wno-format -o seek seek.c
 cosmic -> ls
 checkfile.sh  initfile.sh  main.sh  Makefile  README.md  seek  seek.c
 cosmic -> export PATH=$PATH:`pwd`
+
+# Create 128MB ram drive
 cosmic -> mkdir ramdrive
 cosmic -> sudo mount -t tmpfs -o size=128M,sync tmpfs `pwd`/ramdrive
 [sudo] password for fireplume:
+
+# Launch tool for 128MB ram drive
 cosmic -> main.sh ramdrive 128
 /tmp/exp/cheap-cosmic-ray-detection-project/initfile.sh "\000" "cosmic-screen" 128
 Filling file with: dd if=/dev/zero iflag=fullblock bs=131072 count=1024 2> /dev/null | tr "\000" "\000" > cosmic-screen
@@ -54,6 +62,8 @@ Sun Nov 20 19:27:39 EST 2016
 Psst! pssst! Come on GeV particle!
 ^C
 cosmic ->
+
+# Launch back the verification after stopping 'main.sh':
 cosmic -> cd ramdrive/
 cosmic -> /tmp/exp/cheap-cosmic-ray-detection-project/checkfile.sh "cosmic-screen" "\x00"
 Sun Nov 20 19:29:53 EST 2016
