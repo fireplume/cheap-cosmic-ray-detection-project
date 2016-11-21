@@ -7,8 +7,9 @@ https://en.wikipedia.org/wiki/Soft_error#Causes_of_soft_errors
 
 Yes, the project title is catchy. There are other factors which may cause soft errors, see the link above for details. Still, the idea of using off the shelf memory to detect soft errors which could be due to cosmic ray was interesting to me, so I thought I'd make a little project about it.
 
+```
 ------------------------------------------------------
-Running the flow (it's easier to read in 'raw' mode)
+Running the flow
 ------------------------------------------------------
 
 1) Clone this project on your computer
@@ -57,3 +58,4 @@ cosmic -> cd ramdrive/
 cosmic -> /tmp/exp/cheap-cosmic-ray-detection-project/checkfile.sh "cosmic-screen" "\x00"
 Sun Nov 20 19:29:53 EST 2016
 Psst! pssst! Come on GeV particle!
+```
