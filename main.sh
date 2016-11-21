@@ -22,10 +22,15 @@ if [[ $? != 0 ]]; then
    exit 1
 fi
 
+initfile=`which initfile.sh`
+checkfile=`which checkfile.sh`
+
 # Note that initfile.sh needs to be fed with either a regular character or octal value as supported by 'tr'
-echo "Initializing cosmic screen!"
-. ../initfile.sh "\000" "cosmic-screen" $size_MB
+echo "$initfile \"\000\" \"cosmic-screen\" $size_MB"
+$initfile "\000" "cosmic-screen" $size_MB
+#. ../initfile.sh "\000" "cosmic-screen" $size_MB
 
 # Note that checkfile.sh needs to be fed with either a regular character or hex value as supported by 'echo -e'
-echo "Launching verification loop. Wait and see..."
-. ../checkfile.sh "cosmic-screen" "\x00"
+echo "$checkfile \"cosmic-screen\" \"\x00\""
+$checkfile "cosmic-screen" "\x00"
+#. ../checkfile.sh "cosmic-screen" "\x00"

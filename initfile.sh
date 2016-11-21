@@ -188,7 +188,7 @@ blocksize=$((block_size_kb*1024))
 blockcount=$(($memsize/$blocksize))
 
 # create memsize MB file
-cmd="dd if=/dev/zero iflag=fullblock bs=$blocksize count=$blockcount | tr \"\\000\" \"$fillchar\" > $filename"
+cmd="dd if=/dev/zero iflag=fullblock bs=$blocksize count=$blockcount 2> /dev/null | tr \"\\000\" \"$fillchar\" > $filename"
 echo "Filling file with: $cmd"
 $(eval $cmd)
 echo "Done!"
