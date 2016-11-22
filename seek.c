@@ -15,18 +15,17 @@ Program to put file descriptor pointer at an offset from the start.
 int main(int argc, char* argv[]) {
 
     if(argc != 3) {
-        fprintf(stderr, "Usage: %s <offset in MB> <file descriptor>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <offset in bytes> <file descriptor>\n", argv[0]);
         return 0;
     }
 
-    // Offset parameter is to be specified in MB
-    off_t offset  = (off_t) (atoi(argv[1]) * 1024 * 1024);
+    off_t offset  = (off_t) (atoi(argv[1]));
     int fd        = atoi(argv[2]);
     FILE* f       = NULL;
     struct stat statinfo;
 
     if((offset < 0) || (fd < 0)) {
-        fprintf(stderr, "Offset and file descriptor must be positive integers\n");
+        fprintf(stderr, "Offset and file descriptor must be positive integers: %d:%d\n", offset, fd);
         return 1;
     }
 
