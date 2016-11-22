@@ -136,16 +136,16 @@ The reason being that the check utility checks 4KB at a time."
 
 function assert_enough_memory
 {
-    local requested=$1
-    local available
+    local requested_kb=$(($1/1024))
+    local available_kb
 
     # df -k prints available memory in KB
     # NR==2 because the line of interest is the second one from df's output
     # The gensub commands reads as substitute the K for nothing for 4th field, assign to 'a', then print 'a'
-    available=`df -BK . | gawk '{ if(NR==2) { a = gensub(/K/, "", "g", $4); print a } }'`
+    available_kb=`df -BK . | gawk '{ if(NR==2) { a = gensub(/K/, "", "g", $4); print a } }'`
 
-    if [[ $requested -gt $available ]]; then
-       echo "You've requested more memory than is available"
+    if [[ $requested_kb -gt $available_kb ]]; then
+       echo "You've requested ($requested_kb KB) more memory than is available ($available_kb KB)"
        echo "If you already did a run of this script, erasing the file"
        echo "on your ram drive would fix your issue"
        exit 1
@@ -204,8 +204,6 @@ if [[ -f $filename && ( $overwrite_flag == 1 ) ]]; then
    rm $filename
 fi
 
-assert_enough_memory $requested_size
-
 memsize=$(($requested_size*size_factor))
 blocksize=$((block_size_kb*1024))
 
@@ -214,6 +212,9 @@ if [[ $blocksize -gt $memsize ]]; then
 fi
 
 blockcount=$(($memsize/$blocksize))
+
+# Param in KB
+assert_enough_memory $memsize
 
 # create memsize MB file
 cmd="dd if=/dev/zero iflag=fullblock bs=$blocksize count=$blockcount 2> /dev/null | tr \"\\000\" \"$fillchar\" > $filename"

@@ -16,8 +16,6 @@ filename=$1
 c=`echo -n -e "$2"`
 check_interval=$3
 
-declare -g DEBUG=0
-
 # Check seek util is availble
 $(which seek > /dev/null 2>&1)
 if [[ $? == 1 ]]; then
@@ -72,12 +70,6 @@ function verify
            exit 1
         fi
 
-        if [[ $DEBUG -eq 1 ]]; then
-            echo "Read: ${memstring}"
-            echo "Ref:  ${refstrblock}"
-            exit 1
-        fi
-
         # We only need to verify $size_to_verify amount of meomry, $verification_block_size at a time
         size_verified=$((size_verified+$verification_block_size))
         if [[ $size_verified -ge $size_to_verify ]]; then
@@ -113,11 +105,6 @@ while true; do
         v="v$i"
         wait ${!v}
         s=$?
-
-        if [[ $DEBUG -eq 1 ]]; then
-            echo "Thread $i status: $s"
-        fi
-
         status=$((status|s))
         eval "exec $i>&-"
     done

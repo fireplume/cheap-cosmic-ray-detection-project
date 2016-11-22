@@ -17,14 +17,9 @@ if [[ $# -lt 3 || $# -gt 4 ]]; then
 fi
 
 rampath=$1
-memory_size=$(($2*1024)) # MB by defaults (units are minimally in KB, hence only *1024)
+memory_size=$2
 check_interval=$3
 memory_unit=${4:--M}
-
-# If in kb, divide by 1024
-if [[ ($# == 4) && ($4 == "-k") ]]; then
-    memory_size=$((memory_size/1024))
-fi
 
 cd "$rampath"
 if [[ $? != 0 ]]; then
@@ -40,7 +35,6 @@ if [[ ($s1 != 0) || ($s2 != 0) ]]; then
     echo "initfile.sh and/or checkfile.sh not in your \$PATH environment variable!"
     exit 1
 fi
-
 
 # Note that initfile.sh needs to be fed with either a regular character or octal value as supported by 'tr'
 echo "$initfile \"\000\" \"cosmic-screen\" $memory_size $memory_unit"
