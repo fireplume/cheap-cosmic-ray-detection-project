@@ -1,11 +1,16 @@
 #!/bin/bash
 
-if [[ $# -lt 3 || $# -gt 4 ]]; then
+if [[ $# -lt 3 || $# -gt 5 ]]; then
     echo
-    echo "Usage: $0 <path to ram drive> <size of memory to put under test> <verification interval in seconds> [-k|-M]"
+    echo "Usage: $(basename $0) <ramdrive> <size> <time> <ascii> [-k|-M]"
     echo
-    echo "-k: memory size refers to KB"
-    echo "-M: memory size refers to MB (default)"
+    echo "ramdrive: path to ramdrive"
+    echo "size:     amount of memory to use, unit determined by -k|-M"
+    echo "time:     time in seconds between verification interval of the memory"
+    echo "ascii:    Value can be anything between 1-255. If you want to fill with 'a' character, look up at an ASCII table"
+    echo "          So, for 'a', you could use either one of 97, 0x61 or 0141 (which are respectively a decimal, hexadecimal and octal value)"
+    echo "-k:       memory size refers to KB"
+    echo "-M:       memory size refers to MB (default)"
     echo
     echo "To create a ramdrive: sudo mount -t tmpfs -o size=<> tmpfs <mount point>"
     echo "For example, create a 512MB ram drive named 'ramdrive' in your home:"
@@ -19,7 +24,16 @@ fi
 rampath=$1
 memory_size=$2
 check_interval=$3
-memory_unit=${4:--M}
+
+# Binary value used to fill file shall be 8 bits (0-255)
+binary_value=`printf "%d" $4`
+if [[ $binary_value -lt 1 || $binary_value -gt 255 ]]; then
+    echo "Value entered for filling file must be in range [1-255]"
+    exit 1
+fi
+
+# If $5 not set, initialize to -M for megabytes
+memory_unit=${5:--M}
 
 cd "$rampath"
 if [[ $? != 0 ]]; then
@@ -36,14 +50,12 @@ if [[ ($s1 != 0) || ($s2 != 0) ]]; then
     exit 1
 fi
 
-# Note that initfile.sh needs to be fed with either a regular character or octal value as supported by 'tr'
-echo "$initfile \"\000\" \"cosmic-screen\" $memory_size $memory_unit"
-$initfile "\000" "cosmic-screen" $memory_size $memory_unit
+echo "$initfile $binary_value \"cosmic-screen\" $memory_size $memory_unit"
+$initfile $binary_value "cosmic-screen" $memory_size $memory_unit
 if [[ $? != 0 ]]; then
     echo "Initialization of memory failed, exiting"
     exit 1
 fi
 
-# Note that checkfile.sh needs to be fed with either a regular character or hex value as supported by 'echo -e'
-echo "$checkfile \"cosmic-screen\" \"\x00\" $check_interval"
-$checkfile "cosmic-screen" "\x00" $check_interval
+echo "$checkfile \"cosmic-screen\" $binary_value $check_interval"
+$checkfile "cosmic-screen" $binary_value $check_interval

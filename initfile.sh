@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Hmm, it feels so serious to put this in my script. Why so serious? Ahh, let's do it:
-#
 # Copyright (c) 2016 Mathieu Comeau
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
@@ -56,11 +54,11 @@ function parse_command_line
 {
     if [[ ($# -lt 3) || ($# -gt 7) ]]; then
         echo
-        echo "Usage: $0 <char> <filename> <size> [-n] [-o] [-M|-k] [-b block_size]"
+        echo "Usage: $(basename $0) <ascii> <filename> <size> [-n] [-o] [-M|-k] [-b block_size]"
         echo
-        echo "This program creates and fills given filename with specified char up to specifed size."
+        echo "This program creates and fills given filename with specified ascii char up to specifed size."
         echo "Originally meant to be run on a ramdisk, -n disables the ramdisk check"
-        echo "Char can be any regular character or octal value \\000 as accepted by 'tr'"
+        echo "Ascii is a value between 1 and 255"
         echo
         echo "-b block_size: size in KB of data read/write at a time for
 the file filling, defaults to 128KB. Must be a multiple of 4 and less than or equal to 16384.
@@ -71,13 +69,20 @@ The reason being that the check utility checks 4KB at a time."
         echo "-n: do not check for operation on a ramdisk, which was the original purpose of this script, as I didn't want to accidentally fill my hard drive."
         echo "-o: overwrite filename if it exists"
         echo
-        echo "Example. Create a file named buf and fill it with 256MB of null characters, 512KB at a time:"
-        echo "   $0 \"\\000\" buf 256 -b 512"
+        echo "Example. Create a file named buffer and fill it with 256MB of null characters, 512KB at a time:"
+        echo "   $0 0 buffer 256 -b 512"
         echo
         exit 0
     fi
 
-    fillchar=$1
+    # fill char must correspond to 'tr' supported octal format
+    fillchar=`printf "%d" $1`
+    if [[ $fillchar -lt 1 || $fillchar -gt 255 ]]; then
+        echo "Value entered for filling file must be in range [1-255]"
+        exit 1
+    fi
+
+    fillchar=`printf "\\%03o" $1`
     filename=$2
     requested_size=$3
     # default value:
