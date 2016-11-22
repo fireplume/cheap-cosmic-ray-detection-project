@@ -1,8 +1,11 @@
 #!/bin/bash
 
-if [[ $# != 2 ]]; then
+if [[ $# -lt 3 || $# -gt 4 ]]; then
     echo
-    echo "Usage: $0 <path to ram drive> <size in MB to put under test>"
+    echo "Usage: $0 <path to ram drive> <size of memory to put under test> <verification interval in seconds> [-k|-M]"
+    echo
+    echo "-k: memory size refers to KB"
+    echo "-M: memory size refers to MB (default)"
     echo
     echo "To create a ramdrive: sudo mount -t tmpfs -o size=<> tmpfs <mount point>"
     echo "For example, create a 512MB ram drive named 'ramdrive' in your home:"
@@ -14,7 +17,14 @@ if [[ $# != 2 ]]; then
 fi
 
 rampath=$1
-size_MB=$2
+memory_size=$(($2*1024)) # MB by defaults (units are minimally in KB, hence only *1024)
+check_interval=$3
+memory_unit=${4:--M}
+
+# If in kb, divide by 1024
+if [[ ($# == 4) && ($4 == "-k") ]]; then
+    memory_size=$((memory_size/1024))
+fi
 
 cd "$rampath"
 if [[ $? != 0 ]]; then
@@ -23,14 +33,23 @@ if [[ $? != 0 ]]; then
 fi
 
 initfile=`which initfile.sh`
+s1=$?
 checkfile=`which checkfile.sh`
+s2=$?
+if [[ ($s1 != 0) || ($s2 != 0) ]]; then
+    echo "initfile.sh and/or checkfile.sh not in your \$PATH environment variable!"
+    exit 1
+fi
+
 
 # Note that initfile.sh needs to be fed with either a regular character or octal value as supported by 'tr'
-echo "$initfile \"\000\" \"cosmic-screen\" $size_MB"
-$initfile "\000" "cosmic-screen" $size_MB
-#. ../initfile.sh "\000" "cosmic-screen" $size_MB
+echo "$initfile \"\000\" \"cosmic-screen\" $memory_size $memory_unit"
+$initfile "\000" "cosmic-screen" $memory_size $memory_unit
+if [[ $? != 0 ]]; then
+    echo "Initialization of memory failed, exiting"
+    exit 1
+fi
 
 # Note that checkfile.sh needs to be fed with either a regular character or hex value as supported by 'echo -e'
-echo "$checkfile \"cosmic-screen\" \"\x00\""
-$checkfile "cosmic-screen" "\x00"
-#. ../checkfile.sh "cosmic-screen" "\x00"
+echo "$checkfile \"cosmic-screen\" \"\x00\" $check_interval"
+$checkfile "cosmic-screen" "\x00" $check_interval
