@@ -38,38 +38,20 @@ function jackpot
 }
 
 # Note that this function works as a child process
-function verify
+function c_verify
 {
-    local filedesc=$1
+    local offset=$1
     local size_to_verify=$2
-    local memstring
-    local size_verified=0
+    local filedesc=$3
 
-    # Set IFS
-    IFS=$our_ifs
-
-    # verify 1kb at a time
-    while read -r -n$verification_block_size -u$filedesc memstring; do
-        if [[ !($memstring =~ $refstrblock) && (${#memstring} -ne 0) ]]; then
-            jackpot $memstring
-        fi
-
-        # We only need to verify $size_to_verify amount of meomry, $verification_block_size at a time
-        size_verified=$((size_verified+verification_block_size))
-        if [[ $size_verified -ge $size_to_verify ]]; then
-            break
-        fi
-    done
-
-    IFS=$reg_ifs
-
-    if [[ $size_verified -ne $size_to_verify ]]; then
+    echo "checkfile $offset $size_to_verify $filedesc $ascii"
+    out=`eval "checkfile $offset $size_to_verify $filedesc $ascii" 2> /dev/null`
+    status=$?
+    if [[ $status -ne 0 ]]; then
         # How likely would it be to hit our reading IFS?
-        echo "Size verified:  $size_verified"
-        echo "Size to verify: $size_to_verify"
-        echo "Cosmic ray hit us right into the IFS?!?!"
-        jackpot $memstring
+        jackpot $out
     fi
+    return $status
 }
 
 ######################################################
@@ -91,12 +73,12 @@ fi
 
 filename=$1
 # not really a binary value yet, still a string representing our binary value
-binary_value=`printf "%d" $2`
+ascii=`printf "%d" $2`
 check_interval=$3
 
 #############################
 # We need a an IFS that's different from our binary value
-declare -g our_ifs=$(((binary_value+1)%255))
+declare -g our_ifs=$(((ascii+1)%255))
 # get binary value for our ifs
 str_to_bin $our_ifs "our_ifs"
 
@@ -104,17 +86,17 @@ declare -g reg_ifs=$IFS
 
 #############################
 # Check value provided
-if [[ $binary_value -lt 1 || $binary_value -gt 255 ]]; then
+if [[ $ascii -lt 1 || $ascii -gt 255 ]]; then
     echo "Value entered for filling file must be in range [1-255]"
     exit 1
 fi
-str_to_bin $binary_value "c"
+str_to_bin $ascii "c"
 
 #############################
-# Check seek util is availble
-$(which seek > /dev/null 2>&1)
+# Check c utility checkfile is availble
+$(which checkfile > /dev/null 2>&1)
 if [[ $? == 1 ]]; then
-    echo "seek utility is not compiled or not in your path."
+    echo "checkfile utility is not compiled or not in your path."
     echo "Add the utility to your path with: export PATH=\$PATH:<path to utility>"
     echo "For example: export PATH=\$PATH:/home/username/myutils"
 fi
@@ -152,17 +134,10 @@ while true; do
     for i in `seq 4 7`; do
         eval "exec $i<> $filename"
 
-        eval "seek $offset $i"
-        status=$?
-        if [[ $status != 0 ]]; then
-            echo "Failed to seek proper position while verifying file, exit status: $status"
-            exit 1
-        fi
+        c_verify  $offset $base_offset $i &
+        eval "v$i=$!"
 
         offset=$(( offset + base_offset ))
-
-        verify $i $base_offset &
-        eval "v$i=$!"
     done
 
     # Wait for all jobs to be done
@@ -176,7 +151,8 @@ while true; do
     done
 
     if [[ $status -eq 1 ]]; then
-        exit 0
+        echo "checkfile failed"
+        exit 1
     fi
 
     # Tease the cosmic rays
