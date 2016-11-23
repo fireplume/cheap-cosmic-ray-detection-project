@@ -1,9 +1,3 @@
-
-
-PLEASE NOTE I"VE DISCOVERED A BUG WHICH PREVENT THIS PROJECT FROM WORKING PROPERLY FOR NOW, SO DON'T WASTE YOUR TIME ON IT.
-
-
-
 # cheap-cosmic-ray-detection-project
 Using RAM, try to detect soft errors which could be caused by cosmic ray
 
