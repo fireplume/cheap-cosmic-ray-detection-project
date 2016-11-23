@@ -44,7 +44,6 @@ function c_verify
     local size_to_verify=$2
     local filedesc=$3
 
-    echo "checkfile $offset $size_to_verify $filedesc $ascii"
     out=`eval "checkfile $offset $size_to_verify $filedesc $ascii" 2> /dev/null`
     status=$?
     if [[ $status -ne 0 ]]; then
