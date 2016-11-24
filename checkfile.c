@@ -13,8 +13,6 @@ Program to put file descriptor pointer at an offset from the start.
 #include <string.h>     // memset
 #include <stdio.h>      // snprintf
 
-#define FROM_BEGINNING_OF_FILE SEEK_SET
-
 int main(int argc, char* argv[]) {
 
     if(argc != 5) {
@@ -59,9 +57,7 @@ int main(int argc, char* argv[]) {
     #define BLOCK_SIZE 1024
 
     char* ref_block = NULL;
-    //ref_block = (char*)mmap(NULL, BLOCK_SIZE, 0, MAP_ANONYMOUS, 0, 0);
     ref_block = (char*)malloc(BLOCK_SIZE);
-    //if(ref_block == (char*)-1) {
     if(ref_block == NULL) {
         fprintf(stderr, "Failed to allocated memory for ref block: %s\n", strerror(errno));
         return 1;
