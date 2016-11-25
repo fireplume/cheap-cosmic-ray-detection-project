@@ -13,10 +13,19 @@ Running the flow
 ------------------------------------------------------
 
 1) Clone this project on your computer
-2) Run 'make' to generate the 'seek' utility
+2) Run 'make' to generate the 'checkfile' utility
 3) Make sure all the shell and programs from the project are in your $PATH environment variable
 4) Create a ram drive
-5) Run main.sh <path to ramdrive> <memory to use for test>
+5) Run main.sh <ramdrive> <size> <time> <ascii> [-k|-M] where:
+
+ramdrive: path to ramdrive
+size:     amount of memory to use, unit determined by -k|-M
+time:     time in seconds between verification interval of the memory
+ascii:    Value can be anything between 1-255. If you want to fill with 'a' character, look up at an ASCII table
+          So, for 'a', you could use either one of 97, 0x61 or 0141 (which are respectively a decimal, hexadecimal and octal value)
+-k:       memory size refers to KB
+-M:       memory size refers to MB (default)
+
 6) After memory has been initialized, it doesn't matter if shell crashes.
 You will lose the start date information, but you can follow up on the
 memory verification later on by running the 'checkfile.sh' command that
