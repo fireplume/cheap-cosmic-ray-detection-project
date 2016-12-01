@@ -33,6 +33,8 @@ function jackpot
     echo "Cosmic ray!"
     echo "Here is the faulty block:"
     echo "$h"
+    echo -n "Launch date: "
+    cat ~/cosmic.launch.date
     date
     exit 1
 }
@@ -122,7 +124,9 @@ if [[ ($size_kb -lt 4) || ($(($size_kb%4)) != 0) ]]; then
     exit 1
 fi
 
-date
+if ! [[ -f ~/cosmic.launch.date ]]; then
+    date > ~/cosmic.launch.date
+fi
 
 # Main loop
 while true; do

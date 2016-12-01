@@ -25,6 +25,10 @@ rampath=$1
 memory_size=$2
 check_interval=$3
 
+if [[ -f ~/cosmic.launch.date ]]; then
+    rm ~/cosmic.launch.date
+fi
+
 # Binary value used to fill file shall be 8 bits (0-255)
 binary_value=`printf "%d" $4`
 if [[ $binary_value -lt 1 || $binary_value -gt 255 ]]; then
