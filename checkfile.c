@@ -1,5 +1,5 @@
 /*
-Program to put file descriptor pointer at an offset from the start.
+Program to verify a block of data at an offset on a given file descriptor.
 */
 #include <sys/stat.h>   // fdopen
 #include <fcntl.h>      // fdopen
